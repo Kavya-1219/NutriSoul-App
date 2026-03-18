@@ -1,0 +1,24 @@
+# Local project ignores
+figma/
+bore.exe
+bore.zip
+*.log
+*.txt
+*.csv
+tunnel_manager.js
+
+# Python/Django
+__pycache__/
+*.py[cod]
+*$py.class
+env/
+venv/
+.env
+db.sqlite3
+
+# Android/Gradle
+.gradle/
+build/
+local.properties
+.idea/
+*.iml
