@@ -139,13 +139,13 @@ REST_FRAMEWORK = {
 # Email Settings
 # For production/real device testing, use SMTP.
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'nutrisoulapp@gmail.com'
 EMAIL_HOST_PASSWORD = 'pfpu konq fxyy gdoo'
 DEFAULT_FROM_EMAIL = 'nutrisoulapp@gmail.com'
+# DEFAULT_FROM_EMAIL = 'nutrisoulapp@gmail.com'
 
 # Gemini AI Settings
 GEMINI_API_KEY = 'AIzaSyBUQimUXdDBcvKLUW2NWsf980CMYKHAZZE'

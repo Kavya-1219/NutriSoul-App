@@ -25,6 +25,57 @@ class FoodScanService:
         "bread", "chicken", "coffee", "tea", "orange", "sandwich", "pasta"
     ]
 
+    # Static nutrition data (per 100g) — ultimate fallback when all AI/API calls fail
+    STATIC_NUTRITION = {
+        "apple": {"calories": 52, "protein": 0.3, "carbs": 14, "fats": 0.2, "fiber": 2.4},
+        "banana": {"calories": 89, "protein": 1.1, "carbs": 23, "fats": 0.3, "fiber": 2.6},
+        "orange": {"calories": 47, "protein": 0.9, "carbs": 12, "fats": 0.1, "fiber": 2.4},
+        "rice": {"calories": 130, "protein": 2.7, "carbs": 28, "fats": 0.3, "fiber": 0.4},
+        "bread": {"calories": 265, "protein": 9, "carbs": 49, "fats": 3.2, "fiber": 2.7},
+        "egg": {"calories": 155, "protein": 13, "carbs": 1.1, "fats": 11, "fiber": 0},
+        "chicken": {"calories": 165, "protein": 31, "carbs": 0, "fats": 3.6, "fiber": 0},
+        "milk": {"calories": 42, "protein": 3.4, "carbs": 5, "fats": 1, "fiber": 0},
+        "pizza": {"calories": 266, "protein": 11, "carbs": 33, "fats": 10, "fiber": 2.3},
+        "burger": {"calories": 295, "protein": 17, "carbs": 24, "fats": 14, "fiber": 1.3},
+        "salad": {"calories": 20, "protein": 1.5, "carbs": 3.5, "fats": 0.2, "fiber": 2},
+        "pasta": {"calories": 131, "protein": 5, "carbs": 25, "fats": 1.1, "fiber": 1.8},
+        "sandwich": {"calories": 250, "protein": 12, "carbs": 30, "fats": 9, "fiber": 2},
+        "cake": {"calories": 257, "protein": 4.6, "carbs": 36, "fats": 11, "fiber": 0.4},
+        "coffee": {"calories": 2, "protein": 0.3, "carbs": 0, "fats": 0, "fiber": 0},
+        "tea": {"calories": 1, "protein": 0.1, "carbs": 0.3, "fats": 0, "fiber": 0},
+        "roti": {"calories": 297, "protein": 9.8, "carbs": 50, "fats": 7, "fiber": 4},
+        "dal": {"calories": 116, "protein": 9, "carbs": 20, "fats": 0.4, "fiber": 8},
+        "paneer": {"calories": 265, "protein": 18, "carbs": 1.2, "fats": 21, "fiber": 0},
+        "idli": {"calories": 58, "protein": 2, "carbs": 12, "fats": 0.2, "fiber": 0.5},
+        "dosa": {"calories": 168, "protein": 4, "carbs": 27, "fats": 4, "fiber": 1},
+        "biryani": {"calories": 200, "protein": 7, "carbs": 25, "fats": 8, "fiber": 1},
+        "samosa": {"calories": 262, "protein": 4, "carbs": 28, "fats": 15, "fiber": 2},
+        "noodles": {"calories": 138, "protein": 4.5, "carbs": 25, "fats": 2, "fiber": 1},
+        "fruit": {"calories": 52, "protein": 0.5, "carbs": 14, "fats": 0.2, "fiber": 2},
+        "vegetables": {"calories": 25, "protein": 1.5, "carbs": 5, "fats": 0.2, "fiber": 2.5},
+        "curd": {"calories": 98, "protein": 11, "carbs": 3.4, "fats": 4.3, "fiber": 0},
+        "yogurt": {"calories": 59, "protein": 10, "carbs": 3.6, "fats": 0.4, "fiber": 0},
+        "chapati": {"calories": 297, "protein": 9.8, "carbs": 50, "fats": 7, "fiber": 4},
+        "oats": {"calories": 68, "protein": 2.4, "carbs": 12, "fats": 1.4, "fiber": 1.7},
+        "poha": {"calories": 244, "protein": 5, "carbs": 52, "fats": 1, "fiber": 2},
+        "upma": {"calories": 155, "protein": 4, "carbs": 22, "fats": 5.5, "fiber": 1.5},
+        "paratha": {"calories": 260, "protein": 6, "carbs": 36, "fats": 10, "fiber": 3},
+        "fish": {"calories": 206, "protein": 22, "carbs": 0, "fats": 12, "fiber": 0},
+        "mutton": {"calories": 294, "protein": 25, "carbs": 0, "fats": 21, "fiber": 0},
+        "cheese": {"calories": 402, "protein": 25, "carbs": 1.3, "fats": 33, "fiber": 0},
+        "chocolate": {"calories": 546, "protein": 5, "carbs": 60, "fats": 31, "fiber": 7},
+        "juice": {"calories": 46, "protein": 0.5, "carbs": 11, "fats": 0.1, "fiber": 0.2},
+        "soup": {"calories": 35, "protein": 1.5, "carbs": 5, "fats": 1, "fiber": 0.5},
+        "water": {"calories": 0, "protein": 0, "carbs": 0, "fats": 0, "fiber": 0},
+        "snack": {"calories": 250, "protein": 5, "carbs": 30, "fats": 12, "fiber": 2},
+        "dessert": {"calories": 350, "protein": 4, "carbs": 50, "fats": 15, "fiber": 1},
+        "meat": {"calories": 250, "protein": 25, "carbs": 0, "fats": 15, "fiber": 0},
+        "meal": {"calories": 400, "protein": 20, "carbs": 40, "fats": 15, "fiber": 4},
+        "drink": {"calories": 100, "protein": 0.5, "carbs": 25, "fats": 0, "fiber": 0},
+        "beverage": {"calories": 100, "protein": 0.5, "carbs": 25, "fats": 0, "fiber": 0},
+        "vegetable": {"calories": 25, "protein": 1.5, "carbs": 5, "fats": 0.2, "fiber": 2.5},
+    }
+
     def __init__(self):
         self.api_key = getattr(settings, "GEMINI_API_KEY", None)
         self.model = None
@@ -47,75 +98,102 @@ class FoodScanService:
         self.edamam_api_key = getattr(settings, "EDAMAM_API_KEY", None)
 
     def scan_food(self, image_file, additional_text=""):
-        if not self.model:
-            logger.error("AI model is unavailable.")
-            return [], "Unable to detect food automatically. Please enter manually."
-
-        try:
-            img = Image.open(image_file).convert("RGB")
-            
-            if self.mock_mode:
-                logger.info("GEMINI_MOCK_MODE is ON. Returning simulated response.")
-                raw_text = '{"items": [{"name": "Pizza", "confidence": 0.92, "estimated_per_100g": {"calories": 266, "protein": 11, "carbs": 33, "fats": 10}}]}'
-            else:
-                prompt = self._build_prompt(additional_text)
-                try:
-                    response = self.model.generate_content([prompt, img])
-                    raw_text = getattr(response, "text", "") or ""
-                except Exception as e:
-                    error_msg = str(e).lower()
-                    if "not found" in error_msg or "404" in error_msg:
-                        logger.warning("gemini-1.5-flash-latest not found, falling back to gemini-1.5-pro")
-                        fallback_model = genai.GenerativeModel("gemini-1.5-pro")
-                        response = fallback_model.generate_content([prompt, img])
+        # Try AI-powered scan first
+        if self.model:
+            try:
+                img = Image.open(image_file).convert("RGB")
+                
+                if self.mock_mode:
+                    logger.info("GEMINI_MOCK_MODE is ON. Returning simulated response.")
+                    raw_text = '{"items": [{"name": "Pizza", "confidence": 0.92, "estimated_per_100g": {"calories": 266, "protein": 11, "carbs": 33, "fats": 10}}]}'
+                else:
+                    prompt = self._build_prompt(additional_text)
+                    try:
+                        response = self.model.generate_content([prompt, img])
                         raw_text = getattr(response, "text", "") or ""
-                    else:
-                        raise e
-            
-            if not raw_text:
-                logger.warning("Gemini returned empty text response.")
-                return [], "Unable to detect food automatically. Please enter manually."
+                    except Exception as e:
+                        error_msg = str(e).lower()
+                        if "not found" in error_msg or "404" in error_msg:
+                            logger.warning("Primary model failed, trying gemini-1.5-pro")
+                            try:
+                                fallback_model = genai.GenerativeModel("gemini-1.5-pro")
+                                response = fallback_model.generate_content([prompt, img])
+                                raw_text = getattr(response, "text", "") or ""
+                            except Exception as e2:
+                                logger.warning("Fallback model also failed: %s", e2)
+                                raw_text = ""
+                        else:
+                            logger.warning("Gemini generate_content failed: %s", e)
+                            raw_text = ""
+                
+                if raw_text:
+                    logger.info("Raw Gemini response length: %d", len(raw_text))
+                    cleaned_text = self._extract_json_text(raw_text)
 
-            logger.info("Raw Gemini response length: %d", len(raw_text))
-            cleaned_text = self._extract_json_text(raw_text)
+                    if cleaned_text:
+                        data = json.loads(cleaned_text)
+                        detected_items = data.get("items", [])
+                        
+                        if isinstance(detected_items, list) and detected_items:
+                            results = []
+                            for item in detected_items:
+                                mapped = self._map_item_to_result(item)
+                                if mapped:
+                                    results.append(mapped)
 
-            if not cleaned_text:
-                return [], "Unable to detect food automatically. Please enter manually."
+                            if results:
+                                return results, "success"
 
-            data = json.loads(cleaned_text)
-            detected_items = data.get("items", [])
-            
-            if not isinstance(detected_items, list) or not detected_items:
-                return [], "Unable to detect food automatically. Please enter manually."
+            except Exception as e:
+                logger.exception("Gemini scan failed: %s", e)
+        else:
+            logger.warning("AI model unavailable — using fallback detection.")
 
-            results = []
-            for item in detected_items:
-                # 1. Main visual detection happens here
-                # 2. Strict DB matching happens inside _map_item_to_result
-                mapped = self._map_item_to_result(item)
-                if mapped:
-                    results.append(mapped)
+        # Fallback chain: best-effort → static data → generic food
+        logger.info("Primary AI scan did not produce results. Starting fallback chain.")
 
-            if not results:
-                # Try best-effort fallback if primary AI found nothing
-                best_effort, msg = self._get_best_effort_result(image_file, additional_text)
-                if best_effort:
-                    return best_effort, msg
-                return [], "Unable to detect food automatically. Please enter manually."
+        # 1. Try best-effort (filename + context + DB match)
+        best_effort, msg = self._get_best_effort_result(image_file, additional_text)
+        if best_effort:
+            return best_effort, msg
 
-            # 3. Exact response format for success
-            return results, "success"
+        # 2. Try static nutrition data fallback
+        static_result = self._static_fallback(image_file, additional_text)
+        if static_result:
+            return static_result, "success"
 
-        except Exception as e:
-            logger.exception("Gemini scan failed: %s", e)
-            
-            # Fallback to best-effort logic on total failure (e.g. quota)
-            best_effort, msg = self._get_best_effort_result(image_file, additional_text)
-            if best_effort:
-                return best_effort, msg
+        # 3. Ultimate fallback: return a generic "Mixed Food" result so user always sees something
+        logger.info("All fallbacks exhausted — returning generic food estimate.")
+        
+        fallback_name = "Food Item (estimate)"
+        keywords = set()
+        if additional_text:
+            # We preserve order if we can, but a set is unordered, so let's just pick in order
+            ordered_words = re.findall(r"[A-Za-z]+", additional_text.lower())
+            for w in ordered_words:
+                if w not in self.BLACKLIST and len(w) > 2:
+                    fallback_name = f"{w.capitalize()} (estimate)"
+                    break
 
-            # Return a user-friendly error message, logging the technical details
-            return [], "Unable to detect food automatically. Please enter manually."
+        return [{
+            "name": fallback_name,
+            "calories": 200.0,
+            "protein": 8.0,
+            "carbs": 25.0,
+            "fats": 7.0,
+            "fiber": 2.0,
+            "sugar": 3.0,
+            "saturatedFat": 2.0,
+            "vitaminA": 0.0, "vitaminC": 0.0, "vitaminD": 0.0, "vitaminB12": 0.0,
+            "calcium": 0.0, "iron": 0.0, "magnesium": 0.0, "potassium": 0.0,
+            "sodium": 0.0, "zinc": 0.0,
+            "healthier_alternative": "Try logging manually for accurate tracking.",
+            "pro_tip": "For best results, take a clear photo of your food in good lighting.",
+            "servingQuantity": 100.0,
+            "servingUnit": "g",
+            "confidence": 0.3,
+        }], "Low-confidence estimate. Please verify or edit the values."
+
 
 
     def _get_best_effort_result(self, image_file, additional_text=""):
@@ -139,7 +217,6 @@ class FoodScanService:
 
         # Try to find the best match from COMMON_FOODS first
         best_match = None
-        best_confidence = 0.0
 
         for word in keywords:
             if word in self.BLACKLIST:
@@ -157,7 +234,6 @@ class FoodScanService:
             if db_food:
                 candidate = self._get_db_match(word, 0.55)
                 if candidate:
-                    # Keep searching for a "common" match, but save this one
                     if not best_match:
                         best_match = candidate
 
@@ -167,6 +243,40 @@ class FoodScanService:
             return [best_match], "success"
 
         return None, ""
+
+    def _static_fallback(self, image_file, additional_text=""):
+        """Matches keywords against STATIC_NUTRITION data when DB and API are unavailable."""
+        keywords = set()
+        if additional_text:
+            keywords.update(re.findall(r"[A-Za-z]+", additional_text.lower()))
+        filename = getattr(image_file, "name", "") or ""
+        keywords.update(re.findall(r"[A-Za-z]+", filename.lower()))
+
+        for word in keywords:
+            if word in self.BLACKLIST:
+                continue
+            if word in self.STATIC_NUTRITION:
+                data = self.STATIC_NUTRITION[word]
+                logger.info("Static fallback matched: %s", word)
+                return [{
+                    "name": word.capitalize(),
+                    "calories": float(data["calories"]),
+                    "protein": float(data["protein"]),
+                    "carbs": float(data["carbs"]),
+                    "fats": float(data["fats"]),
+                    "fiber": float(data.get("fiber", 0)),
+                    "sugar": 0.0,
+                    "saturatedFat": 0.0,
+                    "vitaminA": 0.0, "vitaminC": 0.0, "vitaminD": 0.0, "vitaminB12": 0.0,
+                    "calcium": 0.0, "iron": 0.0, "magnesium": 0.0, "potassium": 0.0,
+                    "sodium": 0.0, "zinc": 0.0,
+                    "healthier_alternative": "",
+                    "pro_tip": f"Estimated values for {word}. Adjust serving size as needed.",
+                    "servingQuantity": 100.0,
+                    "servingUnit": "g",
+                    "confidence": 0.5,
+                }]
+        return None
 
 
     def _build_prompt(self, additional_text=""):

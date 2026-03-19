@@ -2,7 +2,7 @@ import requests
 import json
 
 BASE_URL = "http://127.0.0.1:8000/api"
-EMAIL = "test@example.com" # Ensure this user exists or adjust accordingly
+EMAIL = "final_1122@example.com" # Ensure this user exists or adjust accordingly
 
 def test_forgot_password():
     print("--- Testing Forgot Password (OTP Generation) ---")

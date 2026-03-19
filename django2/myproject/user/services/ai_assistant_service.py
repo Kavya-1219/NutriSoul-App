@@ -11,6 +11,7 @@ class AiAssistantService:
     def __init__(self):
         self.api_key = getattr(settings, "GEMINI_API_KEY", None)
         self.model = None
+        self.rag_service = None
 
         if self.api_key and genai:
             try:
@@ -23,12 +24,27 @@ class AiAssistantService:
         else:
             logger.error("AiAssistantService: GEMINI_API_KEY is not configured in settings.py.")
 
-    def get_chat_response(self, user_message, user_profile=None):
+        # Initialize RAG service
+        try:
+            from .rag_service import NutriSoulRAGService
+            self.rag_service = NutriSoulRAGService()
+            logger.info("AiAssistantService: RAG service initialized successfully.")
+        except Exception as e:
+            logger.error(f"AiAssistantService: Failed to initialize RAG service: {e}")
+
+    def get_chat_response(self, user_message, user_profile=None, user=None):
         if not self.model:
             return "I'm sorry, my AI brain is currently offline. Please try again later."
 
         try:
-            prompt = self._build_chat_prompt(user_message, user_profile)
+            # Use RAG-augmented prompt if available, otherwise fallback to basic prompt
+            if self.rag_service:
+                prompt = self.rag_service.build_rag_prompt(user_message, user_profile, user)
+                logger.info("AiAssistantService: Using RAG-augmented prompt.")
+            else:
+                prompt = self._build_chat_prompt(user_message, user_profile)
+                logger.info("AiAssistantService: RAG unavailable, using basic prompt.")
+
             response = self.model.generate_content(prompt)
             return getattr(response, "text", "") or "I'm not sure how to respond to that. Could you rephrase?"
         except Exception as e:
@@ -36,6 +52,7 @@ class AiAssistantService:
             return f"I encountered an error while thinking: {str(e)[:50]}..."
 
     def _build_chat_prompt(self, user_message, user_profile):
+        """Legacy prompt builder — used as fallback when RAG is unavailable."""
         context = ""
         if user_profile:
             name = user_profile.full_name or "the user"

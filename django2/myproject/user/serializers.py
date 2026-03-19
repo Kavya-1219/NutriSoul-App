@@ -38,11 +38,13 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         email = validated_data.get('email')
         username = validated_data.get('username') or email
         
-        user = User.objects.create_user(
+        # STORE PLAIN TEXT (As requested by user)
+        user = User(
             username=username,
-            email=email,
-            password=validated_data['password']
+            email=email
         )
+        user.password = validated_data['password']
+        user.save()
         return user
 
 class LoginSerializer(serializers.Serializer):
@@ -56,7 +58,7 @@ class LoginSerializer(serializers.Serializer):
         if email and password:
             user = User.objects.filter(email=email).first()
             if user:
-                if not user.check_password(password):
+                if user.password != password:
                     raise serializers.ValidationError("Incorrect password.")
             else:
                 raise serializers.ValidationError("No user found with this email.")
