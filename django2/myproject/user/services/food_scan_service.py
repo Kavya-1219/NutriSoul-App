@@ -268,7 +268,40 @@ class FoodScanService:
         pro_tip = candidate.get("pro_tip", "") or ""
         healthier = candidate.get("healthier_alternative", "") or ""
 
-        # 1. DB nutrition is preferred for logging accuracy
+        ai_calories = self._safe_float(est.get("calories"), None)
+
+        # 1. Prefer AI Estimate first for simple foods if AI returned usable macros
+        if normalized_name in self.SIMPLE_FOOD_NAMES and ai_calories is not None and ai_calories > 0:
+            return self._apply_scan_quality_guidance(
+                self._normalized_result(
+                    name=raw_name.title(),
+                    calories=ai_calories,
+                    protein=self._safe_float(est.get("protein"), 0.0),
+                    carbs=self._safe_float(est.get("carbs"), 0.0),
+                    fats=self._safe_float(est.get("fats"), 0.0),
+                    fiber=self._safe_float(est.get("fiber"), 0.0),
+                    sugar=self._safe_float(est.get("sugar"), 0.0),
+                    saturatedFat=self._safe_float(est.get("saturatedFat"), 0.0),
+                    vitaminA=self._safe_float(est.get("vitaminA"), 0.0),
+                    vitaminC=self._safe_float(est.get("vitaminC"), 0.0),
+                    vitaminD=self._safe_float(est.get("vitaminD"), 0.0),
+                    vitaminB12=self._safe_float(est.get("vitaminB12"), 0.0),
+                    calcium=self._safe_float(est.get("calcium"), 0.0),
+                    iron=self._safe_float(est.get("iron"), 0.0),
+                    magnesium=self._safe_float(est.get("magnesium"), 0.0),
+                    potassium=self._safe_float(est.get("potassium"), 0.0),
+                    sodium=self._safe_float(est.get("sodium"), 0.0),
+                    zinc=self._safe_float(est.get("zinc"), 0.0),
+                    servingQuantity=100.0,
+                    servingUnit="g",
+                    confidence=confidence,
+                    healthier_alternative=healthier,
+                    pro_tip=pro_tip,
+                    source="AI Estimate"
+                )
+            )
+
+        # 2. Then trusted DB nutrition
         db_match = self._find_food_match(normalized_name)
         if db_match:
             serving_qty = float(db_match.serving_quantity or 100.0)
@@ -303,53 +336,26 @@ class FoodScanService:
                 )
             )
 
-        # 2. AI estimate if macros exist
-        ai_calories = self._safe_float(est.get("calories"), None)
-        if ai_calories is not None and ai_calories > 0:
-            item = self._normalized_result(
-                name=raw_name.title(),
-                calories=ai_calories,
-                protein=self._safe_float(est.get("protein"), 0.0),
-                carbs=self._safe_float(est.get("carbs"), 0.0),
-                fats=self._safe_float(est.get("fats"), 0.0),
-                fiber=self._safe_float(est.get("fiber"), 0.0),
-                sugar=self._safe_float(est.get("sugar"), 0.0),
-                saturatedFat=self._safe_float(est.get("saturatedFat"), 0.0),
-                vitaminA=self._safe_float(est.get("vitaminA"), 0.0),
-                vitaminC=self._safe_float(est.get("vitaminC"), 0.0),
-                vitaminD=self._safe_float(est.get("vitaminD"), 0.0),
-                vitaminB12=self._safe_float(est.get("vitaminB12"), 0.0),
-                calcium=self._safe_float(est.get("calcium"), 0.0),
-                iron=self._safe_float(est.get("iron"), 0.0),
-                magnesium=self._safe_float(est.get("magnesium"), 0.0),
-                potassium=self._safe_float(est.get("potassium"), 0.0),
-                sodium=self._safe_float(est.get("sodium"), 0.0),
-                zinc=self._safe_float(est.get("zinc"), 0.0),
-                confidence=confidence,
-                healthier_alternative=healthier,
-                pro_tip=pro_tip,
-                source="AI Estimate"
-            )
-            return self._apply_scan_quality_guidance(item)
-
-        # 3. Static only if name is identified but no DB/macros
+        # 3. Backup reference if name exists but DB and AI macros are missing
         static = self.STATIC_NUTRITION.get(normalized_name)
         if static:
-            item = self._normalized_result(
-                name=raw_name.title(),
-                calories=static["calories"],
-                protein=static["protein"],
-                carbs=static["carbs"],
-                fats=static["fats"],
-                fiber=static.get("fiber", 0.0),
-                confidence=min(confidence, 0.55),
-                healthier_alternative=healthier,
-                pro_tip=pro_tip or "Using reference nutrition for the identified food. Please verify serving size.",
-                source="Backup Reference"
+            return self._apply_scan_quality_guidance(
+                self._normalized_result(
+                    name=raw_name.title(),
+                    calories=static["calories"],
+                    protein=static["protein"],
+                    carbs=static["carbs"],
+                    fats=static["fats"],
+                    fiber=static.get("fiber", 0.0),
+                    confidence=min(confidence, 0.55),
+                    healthier_alternative=healthier,
+                    pro_tip=pro_tip or "Using reference nutrition for the identified food. Please verify serving size.",
+                    source="Backup Reference"
+                )
             )
-            return self._apply_scan_quality_guidance(item)
 
         return None
+
 
     def _apply_scan_quality_guidance(self, item):
         confidence = float(item.get("confidence", 0.0))
