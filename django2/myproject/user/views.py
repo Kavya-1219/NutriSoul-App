@@ -324,7 +324,10 @@ class ForgotPasswordView(APIView):
             email = serializer.validated_data['email']
             otp_code = str(random.randint(100000, 999999))
             
-            # Save OTP to database
+            # Cleanup old OTPs for this email to prevent confusion
+            OTP.objects.filter(email=email).delete()
+            
+            # Save new OTP to database
             OTP.objects.create(email=email, code=otp_code)
             
             # Send OTP via email
@@ -334,26 +337,23 @@ class ForgotPasswordView(APIView):
             recipient_list = [email]
             
             try:
-                # Use fail_silently=True to avoid crashing if SMTP is blocked
-                send_mail(subject, message, email_from, recipient_list, fail_silently=True)
+                # Disable fail_silently to see errors in logs
+                send_mail(subject, message, email_from, recipient_list, fail_silently=False)
                 logger.info(f"Successfully sent password reset OTP to {email}")
-                
-                # Always log to console for development visibility
-                print(f"\n{'='*40}")
-                print(f"PASSWORD RESET REQUEST for {email}")
-                print(f"OTP CODE: {otp_code}")
-                print(f"{'='*40}\n")
-                
-                return Response({
-                    "message": "Password reset OTP has been processed. Please check your email (or server console) for the code."
-                }, status=status.HTTP_200_OK)
+                status_msg = "Password reset OTP has been sent. Please check your email."
             except Exception as e:
-                logger.error(f"Error during password reset process for {email}: {str(e)}")
-                # Fallback: print to console anyway
-                print(f"DEBUG: OTP for {email} is {otp_code}")
-                return Response({
-                    "message": "OTP processed with potential delivery delay. Check console for code."
-                }, status=status.HTTP_200_OK)
+                error_str = str(e)
+                logger.error(f"SMTP Error during password reset to {email}: {error_str}")
+                status_msg = f"Email delivery failed: {error_str}. Check server console for the code."
+            
+            # Always log to console for development visibility
+            print(f"\n{'='*40}")
+            print(f"PASSWORD RESET REQUEST for {email}")
+            print(f"OTP CODE: {otp_code}")
+            print(f"STATUS  : {status_msg}")
+            print(f"{'='*40}\n")
+            
+            return Response({"message": status_msg}, status=status.HTTP_200_OK)
                 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -366,10 +366,14 @@ class VerifyOTPView(APIView):
             email = serializer.validated_data['email']
             otp_code = serializer.validated_data['otp']
             
-            otp_obj = OTP.objects.filter(email=email, code=otp_code).last()
+            # Retrieve the ABSOLUTE newest OTP for this email
+            otp_obj = OTP.objects.filter(email=email).order_by('-created_at').first()
             
             if not otp_obj:
-                return Response({"error": "Invalid OTP."}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "No OTP found for this email."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            if otp_obj.code != otp_code:
+                return Response({"error": "Invalid OTP code."}, status=status.HTTP_400_BAD_REQUEST)
             
             if otp_obj.is_expired():
                 return Response({"error": "OTP has expired."}, status=status.HTTP_400_BAD_REQUEST)
@@ -387,9 +391,10 @@ class ResetPasswordView(APIView):
             otp_code = serializer.validated_data['otp']
             new_password = serializer.validated_data['password']
             
-            otp_obj = OTP.objects.filter(email=email, code=otp_code).last()
+            # Retrieve the ABSOLUTE newest OTP for this email
+            otp_obj = OTP.objects.filter(email=email).order_by('-created_at').first()
             
-            if not otp_obj or otp_obj.is_expired():
+            if not otp_obj or otp_obj.code != otp_code or otp_obj.is_expired():
                 return Response({"error": "Invalid or expired OTP."}, status=status.HTTP_400_BAD_REQUEST)
             
             user = User.objects.get(email=email)
@@ -913,26 +918,67 @@ class TodayMacrosView(APIView):
             "fats": fats
         }, status=status.HTTP_200_OK)
 
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.response import Response
+from rest_framework import status
+
+from .serializers import FoodScanRequestSerializer
+from .services import FoodScanService
+
+
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.response import Response
+from rest_framework import status
+
+from .serializers import FoodScanRequestSerializer
+from .services import FoodScanService
+
+
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.response import Response
+from rest_framework import status
+
+from .serializers import FoodScanRequestSerializer
+from .services import FoodScanService
+
+
 class FoodScanView(APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):
         serializer = FoodScanRequestSerializer(data=request.data)
-        if serializer.is_valid():
-            image = serializer.validated_data['image']
-            text = serializer.validated_data.get('text', '')
-            
-            service = FoodScanService()
-            items, message = service.scan_food(image, text)
-            
-            return Response({
-                "detected_items": items,
-                "message": message
-            }, status=status.HTTP_200_OK)
-            
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+        image = serializer.validated_data["image"]
+        text = serializer.validated_data.get("text", "")
+
+        try:
+            service = FoodScanService()
+            detected_items, message = service.scan_food(
+                image_file=image,
+                additional_text=text,
+                user=request.user
+            )
+
+            return Response({
+                "detected_items": detected_items or [],
+                "message": message or "success"
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            logger.exception("Food scan failed: %s", e)
+            return Response({
+                "detected_items": [],
+                "message": "Food scan failed"
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 class TodayMealPlanView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -1088,7 +1134,7 @@ class AiTipsView(APIView):
         except UserProfile.DoesNotExist:
             return Response({"error": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        recommendations = []
+        recommendations = [] # type: list[dict]
         name = profile.full_name or "there"
         
         # 1. BMI Analysis

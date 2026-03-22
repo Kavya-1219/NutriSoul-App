@@ -43,6 +43,7 @@ urlpatterns = [
     path('log-food/', LogFoodView.as_view(), name='log-food'),
     path('today-macros/', TodayMacrosView.as_view(), name='today-macros'),
     path('food-scan/', FoodScanView.as_view(), name='food-scan'),
+    path('scan-food/', FoodScanView.as_view(), name='scan-food'),
     
     # Recipe Endpoints
     path('recipes/', RecipeListView.as_view(), name='recipe-list'),

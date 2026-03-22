@@ -75,21 +75,27 @@ class ForgotPasswordSerializer(serializers.Serializer):
     def validate_email(self, value):
         value = value.strip().lower()
         if not User.objects.filter(email=value).exists():
-            raise serializers.ValidationError("No user found with this email.")
+            raise serializers.ValidationError("No account found with this email address.")
         return value
 
 class VerifyOTPSerializer(serializers.Serializer):
     email = serializers.EmailField()
-    otp = serializers.CharField(max_length=6)
+    otp = serializers.CharField(max_length=6, min_length=6)
 
-    def validate_email(self, value):
-        return value.strip().lower()
+    def validate(self, data):
+        data['email'] = data['email'].strip().lower()
+        if not User.objects.filter(email=data['email']).exists():
+            raise serializers.ValidationError({"email": "Invalid email address."})
+        return data
 
 class ResetPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField()
-    otp = serializers.CharField(max_length=6)
+    otp = serializers.CharField(max_length=6, min_length=6)
     password = serializers.CharField(write_only=True, min_length=8)
     confirm_password = serializers.CharField(write_only=True)
+
+    def validate_email(self, value):
+        return value.strip().lower()
 
     def validate_password(self, value):
         if not re.search(r"[!@#$%^&*]", value):
@@ -97,7 +103,9 @@ class ResetPasswordSerializer(serializers.Serializer):
         return value
 
     def validate(self, data):
-        data['email'] = data.get('email', '').strip().lower()
+        email = data.get('email', '').strip().lower()
+        if not User.objects.filter(email=email).exists():
+            raise serializers.ValidationError({"email": "User not found."})
         if data['password'] != data['confirm_password']:
             raise serializers.ValidationError({"confirm_password": "Passwords do not match."})
         return data
@@ -270,9 +278,11 @@ class MealLogSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError({field: f"{field.capitalize()} cannot be negative."})
         return data
 
+from rest_framework import serializers
+
 class FoodScanRequestSerializer(serializers.Serializer):
     image = serializers.ImageField(required=True)
-    text = serializers.CharField(required=False, allow_blank=True, default="")
+    text = serializers.CharField(required=False, allow_blank=True)
 from .models import MealTemplate, MealTemplateItem, DailyMealPlan, DailyMealEntry
 
 class MealTemplateItemSerializer(serializers.ModelSerializer):

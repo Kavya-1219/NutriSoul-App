@@ -136,21 +136,21 @@ REST_FRAMEWORK = {
     ],
 }
 
-# Email Settings
-# For production/real device testing, use SMTP.
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'nutrisoulapp@gmail.com'
-EMAIL_HOST_PASSWORD = 'pfpu konq fxyy gdoo'
-DEFAULT_FROM_EMAIL = 'nutrisoulapp@gmail.com'
-# DEFAULT_FROM_EMAIL = 'nutrisoulapp@gmail.com'
+
 
 # Gemini AI Settings
-GEMINI_API_KEY = 'AIzaSyBUQimUXdDBcvKLUW2NWsf980CMYKHAZZE'
+GEMINI_API_KEY = 'AIzaSyBZjhaXmm3qssz8hpECD8KBZVaFa-z84Jo'
 GEMINI_MOCK_MODE = False  # Set to True to test without hitting API quotas
 
 # Edamam API Settings (Nutrition Fallback)
 EDAMAM_APP_ID = '1c417de4'
 EDAMAM_API_KEY = '5aae272d457e2c062c80e01c782925df'
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 465
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = 'nutrisoulapp@gmail.com'
+EMAIL_HOST_PASSWORD = 'pfpukonqfxyygdoo'

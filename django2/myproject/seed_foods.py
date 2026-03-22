@@ -16,7 +16,7 @@ foods = [
     {"name": "Egg", "calories_per_100g": 155, "protein_per_100g": 13, "carbs_per_100g": 1.1, "fats_per_100g": 11},
     {"name": "Milk", "calories_per_100g": 42, "protein_per_100g": 3.4, "carbs_per_100g": 5, "fats_per_100g": 1},
     {"name": "Banana", "calories_per_100g": 89, "protein_per_100g": 1.1, "carbs_per_100g": 23, "fats_per_100g": 0.3},
-    {"name": "Apple", "calories_per_100g": 52, "protein_per_100g": 0.3, "carbs_per_100g": 14, "fats_per_100g": 0.2},
+    {"name": "Apple", "calories_per_100g": 52, "protein_per_100g": 0.3, "carbs_per_100g": 14, "fats_per_100g": 0.2, "serving_quantity": 182, "serving_unit": "medium apple"},
     {"name": "Paneer", "calories_per_100g": 265, "protein_per_100g": 18, "carbs_per_100g": 1.2, "fats_per_100g": 20},
     {"name": "Samosa", "calories_per_100g": 308, "protein_per_100g": 3.5, "carbs_per_100g": 32, "fats_per_100g": 18},
     {"name": "Vada", "calories_per_100g": 197, "protein_per_100g": 5, "carbs_per_100g": 24, "fats_per_100g": 9},
@@ -36,13 +36,15 @@ foods = [
 ]
 
 for food in foods:
-    FoodItem.objects.get_or_create(
+    FoodItem.objects.update_or_create(
         name=food["name"],
         defaults={
             "calories_per_100g": food["calories_per_100g"],
             "protein_per_100g": food["protein_per_100g"],
             "carbs_per_100g": food["carbs_per_100g"],
             "fats_per_100g": food["fats_per_100g"],
+            "serving_quantity": food.get("serving_quantity", 100.0),
+            "serving_unit": food.get("serving_unit", "g"),
         }
     )
 

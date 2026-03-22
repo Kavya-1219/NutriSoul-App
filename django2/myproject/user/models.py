@@ -8,7 +8,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 class OTP(models.Model):
-    email = models.EmailField()
+    email = models.EmailField(db_index=True)
     code = models.CharField(max_length=6)
     created_at = models.DateTimeField(auto_now_add=True)
 
