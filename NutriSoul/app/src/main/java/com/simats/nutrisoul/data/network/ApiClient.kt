@@ -10,10 +10,10 @@ object ApiClient {
     /**
      * TO FIX CONNECTION ERRORS:
      * Your device (192.168.137.83) is connected to your PC's Hotspot.
-     * On this network, your PC's IP is: 172.23.50.3
+     * On this network, your PC's IP is: 192.168.72.142
      * Run backend with: python manage.py runserver 0.0.0.0:8000
      */
-    private const val YOUR_PC_IP = "172.23.50.3"
+    private const val YOUR_PC_IP = "192.168.72.142"
     private const val BASE_URL = "http://$YOUR_PC_IP:8000/api/"
     // private const val BASE_URL = "http://$YOUR_PC_IP:8000/api/"
 
