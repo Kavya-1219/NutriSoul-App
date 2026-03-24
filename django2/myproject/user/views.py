@@ -735,13 +735,13 @@ class HomeView(APIView):
             date_str = request.query_params.get('date')
             if date_str:
                 try:
-                    today = datetime.strptime(date_str, '%Y-%m-%d').date()
+                    target_date = datetime.strptime(date_str, '%Y-%m-%d').date()
                 except (ValueError, TypeError):
-                    today = timezone.now().date()
+                    target_date = timezone.now().date()
             else:
-                today = timezone.now().date()
+                target_date = timezone.now().date()
             
-            food_logs = FoodLog.objects.filter(user=request.user, timestamp__date=today)
+            food_logs = FoodLog.objects.filter(user=request.user, timestamp__date=target_date)
             daily_totals = food_logs.aggregate(
                 total_calories=Sum(models.F('calories_per_unit') * models.F('quantity'), output_field=models.FloatField()),
                 total_protein=Sum(models.F('protein_per_unit') * models.F('quantity'), output_field=models.FloatField()),
@@ -754,11 +754,18 @@ class HomeView(APIView):
             data = serializer.data
             
             # Use dynamic values for today's calories and macros
-            data['todays_calories'] = daily_totals['total_calories'] or 0.0
-            data['todays_protein'] = daily_totals['total_protein'] or 0.0
-            data['todays_carbs'] = daily_totals['total_carbs'] or 0.0
-            data['todays_fats'] = daily_totals['total_fats'] or 0.0
+            t_cal = daily_totals['total_calories'] or 0.0
+            data['todaysCalories'] = t_cal
+            data['todaysProtein'] = daily_totals['total_protein'] or 0.0
+            data['todaysCarbs'] = daily_totals['total_carbs'] or 0.0
+            data['todaysFats'] = daily_totals['total_fats'] or 0.0
             
+            # Sync Profile cache if it's actually today
+            if not date_str or target_date == timezone.now().date():
+                if profile.todays_calories != t_cal:
+                    profile.todays_calories = t_cal
+                    profile.save(update_fields=['todays_calories'])
+
             data['dailyTip'] = daily_tip
             data['recentHistory'] = recent_history
             data['aiTips'] = ai_tips
@@ -842,45 +849,45 @@ class LogFoodView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        print("LOG-FOOD request.data =", request.data)
         serializer = MealLogSerializer(data=request.data)
         if serializer.is_valid():
             meal_log = serializer.save(user=request.user)
+            print("MealLog saved:", meal_log.id, meal_log.food_name, meal_log.calories)
+            print("FoodLog created for:", request.user.email)
 
-            # Create FoodLog entry for history synchronization
+            # Create FoodLog entry for history synchronization (this is our primary tracking record)
             try:
-                # Calculate per-100g values if needed, but LogFoodRequest already has absolute values
-                # based on the quantity. However, HistoryViewModel expects per-100g values.
-                # In LogFoodViewModel.kt, we see it saves per-100g values to FoodLogEntity.
-                # Let's try to infer per-unit values.
+                # qty is the gram weight (e.g., 250), we store qty/100.0 as multiplier
                 qty = meal_log.quantity or 1.0
+                multiplier = qty / 100.0
+                
+                # We calculate per-100g basis if the data came in absolute values
                 FoodLog.objects.create(
                     user=request.user,
                     name=meal_log.food_name,
-                    calories_per_unit=meal_log.calories / (qty / 100.0) if qty > 0 else meal_log.calories,
-                    protein_per_unit=meal_log.protein / (qty / 100.0) if qty > 0 else meal_log.protein,
-                    carbs_per_unit=meal_log.carbs / (qty / 100.0) if qty > 0 else meal_log.carbs,
-                    fats_per_unit=meal_log.fats / (qty / 100.0) if qty > 0 else meal_log.fats,
-                    quantity=qty / 100.0,
+                    calories_per_unit=meal_log.calories / multiplier if multiplier > 0 else meal_log.calories,
+                    protein_per_unit=meal_log.protein / multiplier if multiplier > 0 else meal_log.protein,
+                    carbs_per_unit=meal_log.carbs / multiplier if multiplier > 0 else meal_log.carbs,
+                    fats_per_unit=meal_log.fats / multiplier if multiplier > 0 else meal_log.fats,
+                    quantity=multiplier,
                     unit="100g",
-                    timestamp=meal_log.created_at or timezone.now()
+                    timestamp=timezone.make_aware(datetime.combine(meal_log.date, timezone.now().time()))
                 )
             except Exception as e:
-                print(f"Error creating FoodLog entry: {e}")
+                logger.error(f"Error creating FoodLog entry: {e}")
 
-            # Update UserProfile.todays_calories for the current day only
+            # Force update UserProfile.todays_calories to ensure Dashboard updates immediately
             today = timezone.now().date()
-            if meal_log.date == today:
-                profile = UserProfile.objects.filter(user=request.user).first()
-                if profile:
-                    # Sync todays_calories dynamically based on all FoodLogs for today
-                    food_logs = FoodLog.objects.filter(user=request.user, timestamp__date=today)
-                    total_cals = food_logs.aggregate(
-                        total=Sum(models.F('calories_per_unit') * models.F('quantity'), output_field=models.FloatField())
-                    )['total'] or 0.0
-                    profile.todays_calories = total_cals
-                    profile.save(update_fields=['todays_calories'])
+            profile = UserProfile.objects.filter(user=request.user).first()
+            if profile and meal_log.date == today:
+                food_logs = FoodLog.objects.filter(user=request.user, timestamp__date=today)
+                total_cals = food_logs.aggregate(
+                    total=Sum(models.F('calories_per_unit') * models.F('quantity'), output_field=models.FloatField())
+                )['total'] or 0.0
+                profile.todays_calories = total_cals
+                profile.save(update_fields=['todays_calories'])
 
-            meal_log.refresh_from_db()
             return Response(MealLogSerializer(meal_log).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -1084,7 +1091,7 @@ class MarkMealEatenView(APIView):
                 protein_per_unit=float(entry.protein),
                 carbs_per_unit=float(entry.carbs),
                 fats_per_unit=float(entry.fats),
-                quantity=1.0,
+                quantity=1.0, # entry is usually a single serving
                 unit='serving',
                 timestamp=timezone.make_aware(datetime.combine(target_date, timezone.now().time()))
             )

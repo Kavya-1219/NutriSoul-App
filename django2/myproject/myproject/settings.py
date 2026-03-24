@@ -10,17 +10,21 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load .env file
+load_dotenv(BASE_DIR / '.env')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-)3-j@h9l0v5*kw-0kqzg%qo(n7rszi*jci_96rwht)ps@njtxs'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-default-key-for-dev')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -80,7 +84,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'nutrisoul',
         'USER': 'root',
-        'PASSWORD': 'root',
+        'PASSWORD': os.getenv('DB_PASSWORD', 'root'),
         'HOST': 'localhost',
         'PORT': '3306',
     }
@@ -137,14 +141,13 @@ REST_FRAMEWORK = {
 }
 
 
-
 # Gemini AI Settings
-GEMINI_API_KEY = 'AIzaSyBZjhaXmm3qssz8hpECD8KBZVaFa-z84Jo'
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 GEMINI_MOCK_MODE = False  # Set to True to test without hitting API quotas
 
 # Edamam API Settings (Nutrition Fallback)
-EDAMAM_APP_ID = '1c417de4'
-EDAMAM_API_KEY = '5aae272d457e2c062c80e01c782925df'
+EDAMAM_APP_ID = os.getenv('EDAMAM_APP_ID')
+EDAMAM_API_KEY = os.getenv('EDAMAM_API_KEY')
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -153,4 +156,4 @@ EMAIL_PORT = 465
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 EMAIL_HOST_USER = 'nutrisoulapp@gmail.com'
-EMAIL_HOST_PASSWORD = 'pfpukonqfxyygdoo'
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')

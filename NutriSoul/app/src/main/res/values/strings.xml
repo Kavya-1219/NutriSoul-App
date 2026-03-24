@@ -1,0 +1,108 @@
+<resources>
+    <string name="app_name">NutriSoul</string>
+    <string name="ai_tips_title">AI Tips</string>
+    <string name="analyzing_profile">Analyzing your profile…</string>
+    <string name="personalized_insights_for">Personalized insights for</string>
+    <string name="default_user_name">User</string>
+    <string name="default_goal">Maintain Weight</string>
+    <string name="your_personalized_plan">Your Personalized Plan</string>
+    <string name="your_goal_label">Your Goal</string>
+    <string name="goal_card_description">These recommendations are tailored to help you achieve your goal safely and effectively.</string>
+    <string name="pro_tips_label">Pro Tips</string>
+    <string name="medical_disclaimer">Medical Disclaimer: These are AI-generated optimization strategies. Always consult a healthcare professional before making significant changes to your diet or fitness routine.</string>
+    <string name="navigate_back">Navigate back</string>
+    <string name="ai_assistant_icon">AI Assistant Icon</string>
+    <string name="pro_tip_1">Eat mindfully to improve metabolic absorption.</string>
+    <string name="pro_tip_2">Prioritize sleep: poor recovery triggers cortisol spikes.</string>
+    <string name="pro_tip_3">Metabolic adaptation is real: focus on consistency.</string>
+    <string name="pro_tip_4">Track progress using trends, not daily weight swings.</string>
+    <string name="medical_disclaimer_icon">Medical Disclaimer Note</string>
+    <string name="pro_tips_icon">Pro Tips Icon</string>
+
+    <!-- History Screen Strings -->
+    <string name="history_title">History</string>
+    <string name="back_button_content_description">Back</string>
+    <string name="nutrition_journey_label">Your nutrition journey</string>
+    <string name="days_logged_label">Days Logged</string>
+    <string name="total_meals_label">Total Meals</string>
+    <string name="today_label">Today</string>
+    <string name="kcal_unit">kcal</string>
+    <string name="protein_label">Protein</string>
+    <string name="carbs_label">Carbs</string>
+    <string name="fats_label">Fats</string>
+    <string name="logged_foods_count_format">LOGGED FOODS (%1$d)</string>
+    <string name="kcal_format">%1$d kcal</string>
+    <string name="gram_format">%1$dg</string>
+
+    <!-- Recommendation Strings (Build Logic) -->
+    <string name="bmi_status_format">BMI Status: %1$.1f (%2$s)</string>
+    <string name="bmi_desc_format">Your BMI is %1$s. Based on current trends, %2$s</string>
+    <string name="bmi_msg_underweight">increasing calorie density is recommended to build healthy mass.</string>
+    <string name="bmi_msg_normal">you are in the optimal range. Focus on maintaining metabolic flexibility.</string>
+    <string name="bmi_msg_overweight_obese">a slight calorie deficit is recommended to reduce systemic inflammation.</string>
+    <string name="weight_mgmt_strategy">Weight Management Strategy</string>
+    <string name="weight_mgmt_desc">To reach your target, you need to lose %1$d kg. AI Suggestion: deficit around %2$d kcal with high protein to spare muscle.</string>
+    <string name="metabolic_support">Metabolic Support</string>
+    <string name="metabolic_support_desc">Target ~%1$dg of protein daily. This prevents metabolic slowdown while you\'re in a calorie deficit.</string>
+    <string name="growth_recovery_plan">Growth &amp; Recovery Plan</string>
+    <string name="growth_recovery_desc">Aiming for %1$d kg gain. AI Suggestion: consistent surplus (~%2$d kcal) paired with resistance training.</string>
+    <string name="anabolic_environment">Anabolic Environment</string>
+    <string name="anabolic_environment_desc">Target ~1.6g/kg protein (~%1$dg/day) to maximize muscle protein synthesis. Spread across 4-5 meals.</string>
+    <string name="maintenance_optimization">Maintenance &amp; Optimization</string>
+    <string name="maintenance_optimization_desc">Stay around %1$d kcal/day. Focus on dietary diversity and consistent sleep to optimize recovery.</string>
+    <string name="lifestyle_optimization">Lifestyle Optimization</string>
+    <string name="activity_sedentary">Activity levels are low. Focus on NEAT (Non-Exercise Activity Thermogenesis) like standing or short walks.</string>
+    <string name="activity_light">Daily activity is good. Adding 2 days of strength training will boost your BMR.</string>
+    <string name="activity_moderate">Excellent activity level. Prioritize electrolyte balance and post-workout recovery.</string>
+    <string name="activity_active">High volume detected. Ensure you are meeting carbohydrate targets for glycogen replenishment.</string>
+    <string name="activity_default">Consistent movement supports your overall health and %1$s goal.</string>
+    <string name="vitals_alert_bp">Vitals Alert: BP Management</string>
+    <string name="vitals_alert_bp_desc">Recorded BP (%1$d/%2$d) is elevated. AI Insight: Focus on the DASH diet (rich in potassium, calcium, and magnesium).</string>
+    <string name="cardio_health">Cardiovascular Health</string>
+    <string name="cardio_health_desc">Prioritize phytosterols and omega-3 fatty acids. Limit saturated fats to &lt;7% of total calories.</string>
+    <string name="condition_mgmt_format">Condition Management: %1$s</string>
+    <string name="fluid_balance">Fluid Balance</string>
+    <string name="fluid_balance_desc">Drink about %1$dml daily (~%2$d glasses). Hydration status directly impacts cognitive function and satiety.</string>
+
+    <!-- Health Tips Map -->
+    <string name="tip_diabetes">Focus on high-fiber, low-GI foods. Prefer whole grains, legumes, veggies, and avoid sugary drinks.</string>
+    <string name="tip_pcos">Include anti-inflammatory foods like nuts, seeds, fatty fish, and plenty of vegetables. Limit refined carbs.</string>
+    <string name="tip_thyroid">Ensure adequate iodine and selenium intake. Include eggs, dairy, nuts, and balanced meals.</string>
+    <string name="tip_hbp">Limit sodium and include potassium-rich foods like bananas, spinach, coconut water, and dals.</string>
+    <string name="tip_lbp">Stay hydrated and consider small, frequent meals. Include electrolytes if needed.</string>
+    <string name="tip_cholesterol">Increase soluble fiber (oats, apples, beans) and healthy fats (olive oil, nuts).</string>
+    <string name="tip_digestive">Include probiotics/fermented foods and gradually increase fiber. Stay hydrated.</string>
+    <string name="tip_anemia">Boost iron intake with vitamin C pairing (lemon, amla). Include leafy greens, legumes, and dates.</string>
+    <string name="tip_allergies">Read labels carefully and avoid cross-contamination. Prefer simple, home-cooked meals.</string>
+
+    <!-- Home Screen Strings -->
+    <string name="error_loading_user_data">Error loading user data.</string>
+    <string name="retry">Retry</string>
+    <string name="tip_under_calorie_target">You\'re doing great! Make sure to eat enough to meet your daily goals.</string>
+    <string name="tip_over_calorie_target">You\'re over your calorie target. Try lighter options for your next meal.</string>
+    <string name="tip_on_track">You\'re on track! Keep up the good work with balanced nutrition.</string>
+    <string name="greeting_morning">Good Morning</string>
+    <string name="greeting_afternoon">Good Afternoon</string>
+    <string name="greeting_evening">Good Evening</string>
+    <string name="profile_picture_content_description">Profile picture</string>
+    <string name="daily_calorie_goal_title">Daily Calorie Goal</string>
+    <string name="remaining_kcal_format">Remaining: %1$d kcal</string>
+    <string name="over_by_kcal_format">Over by: %1$d kcal</string>
+    <string name="burned_kcal_format">Burned: %1$d kcal</string>
+    <string name="weight_progress_title">Weight Progress</string>
+    <string name="current_label">Current</string>
+    <string name="target_label">Target</string>
+    <string name="weight_kg_format">%1$.1f kg</string>
+    <string name="weight_to_go_format">%1$.1f kg to go</string>
+    <string name="todays_activity_title">Today\'s Activity</string>
+    <string name="ml_water_label">ml water</string>
+    <string name="steps_today_label">steps today</string>
+    <string name="quick_actions_title">Quick Actions</string>
+    <string name="log_food_label">Log Food</string>
+    <string name="log_food_desc">Track your meals</string>
+    <string name="meal_plan_label">Meal Plan</string>
+    <string name="meal_plan_desc">View your plan</string>
+    <string name="ai_tips_desc">Get recommendations</string>
+    <string name="history_desc">View past logs</string>
+    <string name="daily_tip_label">Daily Tip</string>
+</resources>

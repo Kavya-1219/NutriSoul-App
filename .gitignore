@@ -6,6 +6,32 @@ bore.zip
 *.txt
 *.csv
 tunnel_manager.js
+bore_log.txt
+current_ipconfig.txt
+current_ips.txt
+ip.txt
+ip_check.txt
+ip_info.txt
+ip_output.txt
+ipconfig.txt
+ipconfig_all.txt
+ipconfig_output.txt
+pinggy_log.txt
+serveo.log
+serveo_err.log
+telebit_log.txt
+tunnel.log
+tunnel_cf.txt
+tunnel_lhr.txt
+tunnel_log.txt
+tunnel_new.txt
+tunnel_pinggy.txt
+tunnel_pinggy_443.txt
+tunnel_random.txt
+tunnel_serveo.txt
+tunnel_serveo_fixed.txt
+tunnel_ssh.txt
+tunnel_url.txt
 
 # Python/Django
 __pycache__/
@@ -15,6 +41,7 @@ env/
 venv/
 .env
 db.sqlite3
+django2/myproject/db.sqlite3
 
 # Android/Gradle
 .gradle/
@@ -22,3 +49,7 @@ build/
 local.properties
 .idea/
 *.iml
+*.hprof
+.externalNativeBuild/
+.cxx/
+captures/

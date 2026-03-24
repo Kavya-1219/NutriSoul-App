@@ -1,0 +1,46 @@
+package com.simats.nutrisoul
+
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.painter.Painter
+import com.simats.nutrisoul.ui.theme.ImageIcons
+
+sealed class Screen(val route: String, val title: String, val icon: @Composable () -> Painter) {
+    object Welcome : Screen("welcome", "Welcome", { ImageIcons.Home })
+    object SignUp : Screen("signup", "Sign Up", { ImageIcons.Home })
+    object Login : Screen("login", "Login", { ImageIcons.Home })
+    object AgeGender : Screen("age_gender", "Age & Gender", { ImageIcons.Home })
+    object HeightWeight : Screen("height_weight", "Height & Weight", { ImageIcons.Home })
+    object Goal : Screen("goal", "Goal", { ImageIcons.Home })
+    object HealthConditions : Screen("health_conditions", "Health Conditions", { ImageIcons.Home })
+    object HealthDetails : Screen("health_details", "Health Details", { ImageIcons.Home })
+    object MealsPerDay : Screen("meals_per_day", "Meals Per Day", { ImageIcons.Home })
+    object DietaryPreferences : Screen("dietary_preferences", "Dietary Preferences", { ImageIcons.Home })
+    object CuisinePreferences : Screen("cuisine_preferences", "Cuisine Preferences", { ImageIcons.Home })
+    object Home : Screen("home", "Home", { ImageIcons.Home })
+    object FoodPreferences : Screen("food_preferences", "Food Preferences", { ImageIcons.Home })
+    object LifestyleAndActivity : Screen("lifestyle_and_activity", "Lifestyle & Activity", { ImageIcons.Home })
+    object GoalWeight : Screen("goal_weight", "Goal Weight", { ImageIcons.Home })
+    object WaterTracking : Screen("water_tracking", "Water Tracking", { ImageIcons.Home })
+    object StepsTracking : Screen("steps_tracking", "Steps Tracking", { ImageIcons.Home })
+    object LogFood : Screen("log_food", "Log Food", { ImageIcons.Home })
+    object AiTips : Screen("ai_tips", "AI Tips", { ImageIcons.Home })
+    object ManualFoodEntry : Screen("manual_food_entry", "Manual Food Entry", { ImageIcons.Home })
+    object ScanFood : Screen("scan_food", "Scan Food", { ImageIcons.Home })
+    object Register : Screen("register", "Register", { ImageIcons.Home })
+    object Splash : Screen("splash", "Splash", { ImageIcons.Home })
+    object Onboarding1 : Screen("onboarding1", "Onboarding", { ImageIcons.Home })
+    object Onboarding2 : Screen("onboarding2", "Onboarding", { ImageIcons.Home })
+    object Onboarding3 : Screen("onboarding3", "Onboarding", { ImageIcons.Home })
+    object ForgotPassword : Screen("forgot_password", "Forgot Password", { ImageIcons.Home })
+    object ResetPassword : Screen("reset_password", "Reset Password", { ImageIcons.Home })
+    object PersonalDetails : Screen("personal_details", "Personal Details", { ImageIcons.Home })
+    object BodyDetails : Screen("body_details", "Body Details", { ImageIcons.Home })
+    object Goals : Screen("goals", "Goals", { ImageIcons.Home })
+    object MealPlan : Screen("meal_plan", "Meal Plan", { ImageIcons.Home })
+    object History : Screen("history", "History", { ImageIcons.Home })
+    object MindCare : Screen("mind_care", "Mind Care", { ImageIcons.MindCare })
+    object Recipes : Screen("recipes", "Recipes", { ImageIcons.Recipes })
+    object Insights : Screen("insights", "Insights", { ImageIcons.Insights })
+    object Settings : Screen("settings", "Settings", { ImageIcons.Settings })
+    object TodaysMealPlan : Screen("todays_meal_plan", "Today's Meal Plan", { ImageIcons.Home })
+}
