@@ -1,7 +1,7 @@
 import requests
 import json
 
-BASE_URL = "http://127.0.0.1:8000/api/recipes/"
+BASE_URL = "http://180.235.121.253:8107/api/recipes/"
 
 def test_list():
     print("\n--- Testing Recipe List ---")
@@ -79,4 +79,4 @@ if __name__ == "__main__":
         test_404()
     except Exception as e:
         print(f"Connection Error: {e}")
-        print("Make sure the server is running at http://127.0.0.1:8000")
+        print("Make sure the server is running at http://180.235.121.253:8107")

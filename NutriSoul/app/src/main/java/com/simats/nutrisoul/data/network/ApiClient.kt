@@ -13,9 +13,9 @@ object ApiClient {
      * On this network, your PC's IP is: 192.168.72.142
      * Run backend with: python manage.py runserver 0.0.0.0:8000
      */
-    private const val YOUR_PC_IP = "192.168.137.1"
-    private const val BASE_URL = "http://$YOUR_PC_IP:8000/api/"
-    // private const val BASE_URL = "http://$YOUR_PC_IP:8000/api/"
+    private const val YOUR_PC_IP = "180.235.121.253:8107"
+    private const val BASE_URL = "http://$YOUR_PC_IP/api/"
+    // private const val BASE_URL = "http://192.168.137.1:8000/api/"
 
     fun create(sessionManager: SessionManager): UserApi {
         val client = okhttp3.OkHttpClient.Builder()

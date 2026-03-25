@@ -3,7 +3,7 @@ import json
 import io
 from PIL import Image
 
-BASE_URL = "http://127.0.0.1:8000/api"
+BASE_URL = "http://180.235.121.253:8107/api"
 LOGIN_URL = f"{BASE_URL}/login/"
 SCAN_URL = f"{BASE_URL}/scan-food/"
 

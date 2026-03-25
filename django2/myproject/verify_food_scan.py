@@ -63,4 +63,4 @@ if __name__ == "__main__":
     print("\nTo test with real AI, make sure to:")
     print("1. Set GEMINI_API_KEY in myproject/settings.py")
     print("2. pip install google-generativeai pillow")
-    print("3. Run: curl.exe -X POST http://127.0.0.1:8000/api/food-scan/ -H 'Authorization: Token YOUR_TOKEN' -F 'image=@path/to/img.jpg'")
+    print("3. Run: curl.exe -X POST http://180.235.121.253:8107/api/food-scan/ -H 'Authorization: Token YOUR_TOKEN' -F 'image=@path/to/img.jpg'")

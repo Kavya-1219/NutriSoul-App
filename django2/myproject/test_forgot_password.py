@@ -1,7 +1,7 @@
 import requests
 import json
 
-BASE_URL = "http://127.0.0.1:8000/api"
+BASE_URL = "http://180.235.121.253:8107/api"
 EMAIL = "final_1122@example.com" # Ensure this user exists or adjust accordingly
 
 def test_forgot_password():
