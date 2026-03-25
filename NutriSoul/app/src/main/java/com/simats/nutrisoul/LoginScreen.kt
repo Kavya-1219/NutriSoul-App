@@ -59,8 +59,29 @@ fun LoginScreen(navController: NavController, authViewModel: AuthViewModel = hil
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Brush.linearGradient(listOf(StepsGradientStart, StepsGradientEnd)))
+            .background(PrimaryGreen)
     ) {
+
+        // Top Logos
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp, start = 16.dp, end = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.simats_logo1),
+                contentDescription = null,
+                modifier = Modifier.size(80.dp)
+            )
+            Image(
+                painter = painterResource(id = R.drawable.simats_logo2),
+                contentDescription = null,
+                modifier = Modifier.size(80.dp)
+            )
+        }
+
         if (authState is AuthState.Loading) {
             CircularProgressIndicator(
                 color = Color.White,
@@ -113,7 +134,7 @@ fun LoginScreen(navController: NavController, authViewModel: AuthViewModel = hil
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 12.dp
             ),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
+            colors = CardDefaults.cardColors(containerColor = LightGreenBackground)
         ) {
 
             Column(modifier = Modifier.padding(24.dp).verticalScroll(rememberScrollState())) {
@@ -130,10 +151,10 @@ fun LoginScreen(navController: NavController, authViewModel: AuthViewModel = hil
                     shape = RoundedCornerShape(14.dp),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = StepsIconGreen,
+                        focusedBorderColor = PrimaryGreen,
                         unfocusedBorderColor = Color.LightGray,
-                        cursorColor = StepsIconGreen,
-                        focusedLabelColor = StepsIconGreen
+                        cursorColor = PrimaryGreen,
+                        focusedLabelColor = PrimaryGreen
                     )
                 )
 
@@ -180,7 +201,7 @@ fun LoginScreen(navController: NavController, authViewModel: AuthViewModel = hil
                     },
                     modifier = Modifier.align(Alignment.End)
                 ) {
-                    Text("Forgot Password?", color = StepsIconGreen, fontWeight = FontWeight.Bold)
+                    Text("Forgot Password?", color = PrimaryGreen, fontWeight = FontWeight.Bold)
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -192,26 +213,19 @@ fun LoginScreen(navController: NavController, authViewModel: AuthViewModel = hil
                         .height(58.dp),
                     shape = RoundedCornerShape(18.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent,
+                        containerColor = PrimaryGreen,
                         disabledContainerColor = Color(0xFF9E9E9E)
                     ),
-                    contentPadding = PaddingValues(0.dp),
                     enabled = authState !is AuthState.Loading
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Brush.horizontalGradient(listOf(StepsGradientStart, StepsGradientEnd))),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            "Login",
-                            color = Color.White,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+                    Text(
+                        "Login",
+                        color = Color.White,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
+
 
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -225,12 +239,20 @@ fun LoginScreen(navController: NavController, authViewModel: AuthViewModel = hil
                     TextButton(onClick = {
                         navController.navigate(Screen.Register.route)
                     }) {
-                        Text("Create Account", color = StepsIconGreen, fontWeight = FontWeight.Bold)
+                        Text("Create Account", color = PrimaryGreen, fontWeight = FontWeight.Bold)
                     }
                 }
             }
         }
+
+        // Footer Text
+        Text(
+            text = "Powered by SIMATS Engineering",
+            color = Color.Black,
+            style = MaterialTheme.typography.labelMedium,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 16.dp)
+        )
     }
 }
-
-

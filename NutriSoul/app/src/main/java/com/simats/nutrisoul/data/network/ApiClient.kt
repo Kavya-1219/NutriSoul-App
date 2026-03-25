@@ -13,7 +13,7 @@ object ApiClient {
      * On this network, your PC's IP is: 192.168.72.142
      * Run backend with: python manage.py runserver 0.0.0.0:8000
      */
-    private const val YOUR_PC_IP = "192.168.72.142"
+    private const val YOUR_PC_IP = "192.168.137.1"
     private const val BASE_URL = "http://$YOUR_PC_IP:8000/api/"
     // private const val BASE_URL = "http://$YOUR_PC_IP:8000/api/"
 
