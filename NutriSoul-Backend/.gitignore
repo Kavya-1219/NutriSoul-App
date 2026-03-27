@@ -1,0 +1,12 @@
+env/
+venv/
+__pycache__/
+*.pyc
+*.sqlite3
+db.sqlite3
+.env
+media/
+*.log
+.DS_Store
+.git_hidden/
+django2/

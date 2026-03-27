@@ -1,9 +1,9 @@
 import requests
 import json
 
-BASE_URL = "http://180.235.121.253:8107/api/recipes/"
-LOGIN_URL = "http://180.235.121.253:8107/api/login/"
-REGISTER_URL = "http://180.235.121.253:8107/api/register/"
+BASE_URL = "http://127.0.0.1:8000/api/recipes/"
+LOGIN_URL = "http://127.0.0.1:8000/api/login/"
+REGISTER_URL = "http://127.0.0.1:8000/api/register/"
 
 TEST_EMAIL = "testuser_phase2@example.com"
 TEST_PASSWORD = "testpassword123"

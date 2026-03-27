@@ -1,7 +1,7 @@
 import requests
 import json
 
-URL = "http://180.235.121.253:8107/api/forgot-password/"
+URL = "http://127.0.0.1:8000/api/forgot-password/"
 DATA = {"email": "user@example.com"}
 
 try:
