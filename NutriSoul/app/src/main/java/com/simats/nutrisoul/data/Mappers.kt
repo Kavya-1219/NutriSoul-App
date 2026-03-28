@@ -39,8 +39,11 @@ fun FoodLog.toEntity(): IntakeEntity {
 }
 
 fun ProfileResponseDto.toUser(): User {
+    // Senior Review: Handle calorie mapping carefully for new accounts
+    val calories = if (targetCalories > 0) targetCalories else if (calorieGoal > 0) calorieGoal else 2000
+    
     return User(
-        email = (email ?: "").lowercase(),
+        email = (email ?: "").trim().lowercase(),
         name = name ?: "",
         age = age,
         gender = gender ?: "",
@@ -69,7 +72,7 @@ fun ProfileResponseDto.toUser(): User {
         diastolic = diastolic,
         systolic = systolic,
         thyroidCondition = thyroidCondition ?: "",
-        targetCalories = targetCalories,
+        targetCalories = calories,
         dietType = dietType ?: "",
         foodDislikes = foodDislikes ?: "",
         darkMode = darkMode,

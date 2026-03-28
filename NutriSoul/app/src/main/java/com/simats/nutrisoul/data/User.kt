@@ -42,3 +42,13 @@ data class User(
     val darkMode: Boolean = false,
     val profilePictureUrl: String? = null
 )
+
+fun User.toNutritionProfile(): com.simats.nutrisoul.data.meal.UserNutritionProfile {
+    return com.simats.nutrisoul.data.meal.UserNutritionProfile(
+        goal = goals.firstOrNull() ?: "maintain",
+        dietType = dietType.ifBlank { "nonveg" },
+        allergies = allergies + foodAllergies,
+        healthConditions = healthConditions,
+        targetCalories = if (targetCalories > 0) targetCalories else 2000
+    )
+}

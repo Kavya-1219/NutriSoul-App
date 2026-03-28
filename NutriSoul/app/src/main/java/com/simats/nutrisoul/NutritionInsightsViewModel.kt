@@ -23,7 +23,8 @@ import kotlin.math.roundToInt
 class NutritionInsightsViewModel @Inject constructor(
     private val repo: FoodLogRepository,
     private val sessionManager: SessionManager,
-    private val apiService: NutriSoulApiService
+    private val apiService: NutriSoulApiService,
+    private val geminiService: com.simats.nutrisoul.data.network.GeminiService
 ) : ViewModel() {
 
     private val zoneId = ZoneId.systemDefault()
@@ -93,11 +94,27 @@ class NutritionInsightsViewModel @Inject constructor(
             _isChatLoading.value = true
             _chatResponse.value = null
             try {
-                val resp = apiService.getAiAssistantResponse(ChatRequest(message))
-                _chatResponse.value = resp.response
+                // Prioritize Gemini for dynamic responses as requested
+                val response = geminiService.getChatResponse(message)
+                
+                // If Gemini fails or returns a quota error, we could try backend as fallback,
+                // but usually backend is static, so we stick with Gemini or show error.
+                if (response.contains("Error:", ignoreCase = true)) {
+                     // Try backend AI as fallback if Gemini has a real error (not quota)
+                     val resp = apiService.getAiAssistantResponse(ChatRequest(message))
+                     _chatResponse.value = resp.response
+                } else {
+                    _chatResponse.value = response
+                }
             } catch (e: Exception) {
-                Log.e("HelpChat", "AI chat error", e)
-                _chatResponse.value = "Sorry, I'm having trouble connecting to the AI right now. Please try again shortly."
+                Log.e("HelpChat", "Gemini error, falling back to backend", e)
+                try {
+                    val resp = apiService.getAiAssistantResponse(ChatRequest(message))
+                    _chatResponse.value = resp.response
+                } catch (be: Exception) {
+                    Log.e("HelpChat", "Backend AI error", be)
+                    _chatResponse.value = "Sorry, I'm having trouble connecting to my servers. Please try again later."
+                }
             } finally {
                 _isChatLoading.value = false
             }

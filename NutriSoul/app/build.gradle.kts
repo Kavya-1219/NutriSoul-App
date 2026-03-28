@@ -120,6 +120,7 @@ dependencies {
     implementation("androidx.compose.foundation:foundation-layout-android:1.6.7")
     implementation("com.google.mlkit:text-recognition:16.0.0")
     implementation("com.google.mlkit:image-labeling:17.0.9")
+    implementation("com.google.ai.client.generativeai:generativeai:0.7.0")
 
     implementation("androidx.camera:camera-core:1.3.3")
     implementation("androidx.camera:camera-camera2:1.3.3")

@@ -70,7 +70,6 @@ fun HelpSupportScreen(
                 when (activeTab) {
                     "faqs" -> FaqsTab { activeTab = "chat" }
                     "chat" -> ChatTab(viewModel)
-                    "insights" -> AiInsightsTab(insightsState)
                 }
             }
         }
@@ -149,17 +148,6 @@ private fun TabSwitcher(activeTab: String, onTabSelected: (String) -> Unit) {
                 contentAlignment = Alignment.Center
             ) {
                 Text("AI Chat", color = if (activeTab == "chat") Color.White else MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(12.dp))
-            }
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(20.dp))
-                    .then(if (activeTab == "insights") Modifier.background(chatGradient) else Modifier.background(Color.Transparent))
-                    .clickable { onTabSelected("insights") },
-                contentAlignment = Alignment.Center
-            ) {
-                // renamed to AI Insights for better clarity with real data
-                Text("AI Insights", color = if (activeTab == "insights") Color.White else MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(12.dp))
             }
         }
     }
@@ -406,126 +394,6 @@ private fun ChatInput(
     }
 }
 
-@Composable
-fun AiInsightsTab(state: NutritionInsightsUiState) {
-    when (state) {
-        is NutritionInsightsUiState.Loading -> {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
-        }
-        is NutritionInsightsUiState.Empty -> {
-            Box(Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Center) {
-                Text(
-                    "Log more meals to see AI nutrition trends and predictions!",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-        is NutritionInsightsUiState.Success -> {
-            val data = state.data
-            LazyColumn(
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-            ) {
-                Column(modifier = Modifier.padding(20.dp)) {
-                    Text(
-                        "AI Consumption Trends",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        "Your average intake is ${data.averageCalories} kcal. You are currently ${data.calorieStatus.label} your target.",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Spacer(modifier = Modifier.height(24.dp))
-                    
-                    // Real Data Chart (Visualization of Macro percentages)
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(150.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.Bottom
-                    ) {
-                        val macros = listOf(
-                            "Protein" to data.proteinPercentage / 100f,
-                            "Carbs" to data.carbsPercentage / 100f,
-                            "Fats" to data.fatsPercentage / 100f
-                        )
-                        macros.forEach { (label, value) ->
-                            val barColor = when(label) {
-                                "Protein" -> Color(0xFF4ADE80)
-                                "Carbs" -> Color(0xFF60A5FA)
-                                else -> Color(0xFFF87171)
-                            }
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Box(
-                                    modifier = Modifier
-                                        .width(40.dp)
-                                        .fillMaxHeight(value.coerceIn(0.1f, 1f))
-                                        .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
-                                        .background(barColor)
-                                )
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Text(text = label, style = MaterialTheme.typography.labelSmall)
-                                Text(text = "${(value * 100).toInt()}%", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
-        item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(24.dp)
-            ) {
-                Column(modifier = Modifier.padding(20.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Star, "Insight", tint = Color(0xFFFFB300))
-                        Spacer(Modifier.width(8.dp))
-                        Text("Personalized AI Tip", fontWeight = FontWeight.Bold)
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    val tip = when {
-                        data.proteinPercentage < 15 -> "Your protein intake is a bit low. Aim for more eggs, dal, or lean meats to support muscle recovery."
-                        data.carbsPercentage > 60 -> "Carbs are high today. Try focusing on fiber-rich complex carbs like oats or brown rice for better satiety."
-                        data.calorieStatus.tone == StatusTone.GOOD -> "Excellent consistency! Your nutrition is perfectly aligned with your health goals."
-                        else -> "Consistency is key. You've logged ${data.daysLogged} days this week. Keeping up this habit is 80% of the journey!"
-                    }
-                    Text(tip, style = MaterialTheme.typography.bodyMedium)
-                }
-            }
-        }
-    }
-}
-}
-}
 
-
-
-private fun getAiResponse(message: String): String {
-    val msg = message.lowercase()
-    return when {
-        msg.contains("hello") || msg.contains("hi") -> "Hello! I'm your AI health assistant. I can help you with nutrition advice, meal planning, or progress tracking. What's on your mind?"
-        msg.contains("weight") -> "To help with weight goals, I recommend focusing on high-fiber foods and consistent tracking. Would you like a personalized 1500-calorie suggestion?"
-        msg.contains("protein") -> "Protein is essential! Good sources include lean meats, legumes, and Greek yogurt. Based on your profile, you should aim for about 1.2g per kg of body weight."
-        msg.contains("log") -> "You can log meals by going to the 'Log Food' screen. From there you can search, manually enter, or scan food items."
-        msg.contains("meal plan") -> "You can view and edit your meal plan on the 'Meal Plan' screen. You can also generate a new plan there."
-        msg.contains("water") -> "Track your water intake on the home screen using the water widget. Each tap adds one glass (250ml)."
-        else -> "That's an interesting question! While I'm still learning about specific medical conditions, I can definitely help with general nutrition tips or meal tracking. Could you tell me more?"
-    }
-}
 
 

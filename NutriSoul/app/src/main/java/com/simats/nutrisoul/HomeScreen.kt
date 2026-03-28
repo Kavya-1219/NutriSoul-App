@@ -141,7 +141,6 @@ private fun HomeDashboardContent(
     todaysSteps: Int
 ) {
     // Priority: 1) Totals from repository (immediate local sync) 2) Backend sync from user profile
-    android.util.Log.d("HOME_DEBUG", "Local=${totals.calories}, Backend=${user.todaysCalories}")
     val consumedCals = maxOf(
         (totals.calories ?: 0.0).toInt().coerceAtLeast(0),
         user.todaysCalories.toInt()

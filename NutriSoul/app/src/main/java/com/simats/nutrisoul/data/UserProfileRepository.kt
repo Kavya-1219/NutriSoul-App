@@ -60,7 +60,11 @@ class UserProfileRepositoryImpl @Inject constructor(
             val response = userApi.login(request)
             sessionManager.saveToken(response.token)
             sessionManager.setCurrentUser(response.email)
-            refreshProfile()
+            // Senior Review: Add retry for first profile fetch as backend might be lagging for new accounts
+            for (i in 0..2) {
+                if (refreshProfile().isSuccess) break
+                if (i < 2) kotlinx.coroutines.delay(1000L * (i + 1))
+            }
             Result.success(response)
         } catch (e: Exception) {
             val message = parseErrorBody(e)
@@ -75,7 +79,11 @@ class UserProfileRepositoryImpl @Inject constructor(
             // Senior Review: Enable auto-login after successful registration
             sessionManager.saveToken(response.token)
             sessionManager.setCurrentUser(response.user.email)
-            refreshProfile()
+            // Senior Review: Add retry for first profile fetch as backend might be lagging for new accounts
+            for (i in 0..2) {
+                if (refreshProfile().isSuccess) break
+                if (i < 2) kotlinx.coroutines.delay(1000L * (i + 1))
+            }
             Result.success(response)
         } catch (e: Exception) {
             val message = parseErrorBody(e)
@@ -181,7 +189,9 @@ class UserProfileRepositoryImpl @Inject constructor(
 
     override suspend fun logout() {
         sessionManager.clearSession()
-        userDao.clearAll()
-        android.util.Log.d("SYNC", "User session and local data cleared")
+        // We do NOT clear the userDao here to allow for offline access of the profile 
+        // until the next user logs in. The SessionManager will still block data access
+        // based on the null currentUserEmail.
+        android.util.Log.d("SYNC", "User session cleared. Local data preserved for offline consistency.")
     }
 }

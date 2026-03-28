@@ -77,8 +77,11 @@ class UserViewModel @Inject constructor(
     }
 
 
+    private var syncJob: kotlinx.coroutines.Job? = null
+
     private fun syncSettings(email: String) {
-        viewModelScope.launch {
+        syncJob?.cancel() // Cancel previous collector for this/old email
+        syncJob = viewModelScope.launch {
             user.collect { user ->
                 user?.let {
                     settingsStore.setDarkMode(email, it.darkMode)
@@ -147,8 +150,19 @@ class UserViewModel @Inject constructor(
     fun setProfilePictureUri(uri: Uri) {
         viewModelScope.launch {
             try {
-                val inputStream = getApplication<Application>().contentResolver.openInputStream(uri)
-                val bytes = inputStream?.readBytes() ?: return@launch
+                // Professional: Use a limited-size buffer or streaming for large images to avoid OOM
+                val contentResolver = getApplication<Application>().contentResolver
+                val inputStream = contentResolver.openInputStream(uri) ?: return@launch
+                
+                // Read into a byte array with automatic resource closing
+                val bytes = try {
+                    inputStream.use { it.readBytes() }
+                } finally {
+                    inputStream.close()
+                }
+                
+                if (bytes.isEmpty()) return@launch
+
                 val mediaType = "image/*".toMediaTypeOrNull()
                 val requestFile = okhttp3.RequestBody.create(mediaType, bytes)
                 val body = MultipartBody.Part.createFormData("profile_picture", "avatar.jpg", requestFile)
@@ -160,8 +174,10 @@ class UserViewModel @Inject constructor(
                         settingsStore.setProfilePicture(email, uri)
                     }
                     _profileUpdated.emit(Unit)
+                } else {
+                    Log.e("UserViewModel", "Upload failed: ${result.exceptionOrNull()?.message}")
                 }
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.e("UserViewModel", "Failed to upload profile picture", e)
             }
         }

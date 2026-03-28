@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import com.simats.nutrisoul.data.MealRepository
 import com.simats.nutrisoul.data.UserProfileRepository
 import com.simats.nutrisoul.data.FoodRepository
+import com.simats.nutrisoul.data.toNutritionProfile
 import com.simats.nutrisoul.data.SessionManager
 import com.simats.nutrisoul.data.FoodLogRepository
 import com.simats.nutrisoul.data.FoodLogEntity
@@ -61,7 +62,11 @@ class MealPlanViewModel @Inject constructor(
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), DailyTotalsUi())
 
     init {
-        refreshAll()
+        viewModelScope.launch {
+            // Wait for the first actual non-null profile before initial load
+            userProfile.filterNotNull().first()
+            refreshAll()
+        }
     }
 
     private fun refreshAll() {
@@ -73,7 +78,8 @@ class MealPlanViewModel @Inject constructor(
         _uiState.value = MealPlanUiState.Loading
         try {
             val today = LocalDate.now().toString()
-            val plan = mealRepository.getTodayMealPlan(today)
+            val profile = userProfile.value?.toNutritionProfile()
+            val plan = mealRepository.getTodayMealPlan(today, profile)
             _uiState.value = MealPlanUiState.Ready(plan)
         } catch (e: Exception) {
             _uiState.value = MealPlanUiState.Error(e.message ?: "Failed to load meal plan")
@@ -82,14 +88,16 @@ class MealPlanViewModel @Inject constructor(
 
     private fun loadTips() = viewModelScope.launch {
         try {
-            _tips.value = mealRepository.getAiTips()
+            val profile = userProfile.value?.toNutritionProfile()
+            _tips.value = mealRepository.getAiTips(profile)
         } catch (e: Exception) {}
     }
 
     fun refresh() = viewModelScope.launch {
         _uiState.value = MealPlanUiState.Loading
         try {
-            val plan = mealRepository.refreshMealPlan()
+            val profile = userProfile.value?.toNutritionProfile()
+            val plan = mealRepository.refreshMealPlan(profile)
             _uiState.value = MealPlanUiState.Ready(plan)
             loadTips()
         } catch (e: Exception) {
